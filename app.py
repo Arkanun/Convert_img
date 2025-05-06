@@ -1,10 +1,13 @@
 import os
 import uuid
+import shutil
 from flask import Flask, request, render_template, url_for, send_from_directory
 from PIL import Image
 
 app = Flask(__name__)
-OUTPUT_FOLDER = "static/output"
+
+# Usando /tmp para armazenamento temporário
+OUTPUT_FOLDER = "/tmp/img_convert"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 @app.route("/", methods=["GET", "POST"])
@@ -48,7 +51,19 @@ def index():
 # Rota para servir imagens geradas
 @app.route("/static/output/<session>/<filename>")
 def get_imagem(session, filename):
+    # Serve as imagens de dentro do tmp/img_convert/ para download
     return send_from_directory(os.path.join(OUTPUT_FOLDER, session), filename)
+
+@app.route("/download/<session_id>")
+def download(session_id):
+    # Caminho para a pasta da sessão
+    session_folder = os.path.join(OUTPUT_FOLDER, session_id)
+
+    # Cria um arquivo zip da pasta da sessão
+    shutil.make_archive(session_folder, 'zip', session_folder)
+
+    # Serve o arquivo zip para download
+    return send_from_directory(session_folder, f"{session_id}.zip")
 
 # Remova o app.run(), pois o Render usará gunicorn
 # if __name__ == "__main__":
