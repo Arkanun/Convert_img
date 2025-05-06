@@ -6,8 +6,8 @@ from PIL import Image
 
 app = Flask(__name__)
 
-# Usando /tmp para armazenamento temporário
-OUTPUT_FOLDER = "/tmp/img_convert"
+# Usando o caminho absoluto no C:\
+OUTPUT_FOLDER = "C:/img_convert"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 @app.route("/", methods=["GET", "POST"])
@@ -51,7 +51,7 @@ def index():
 # Rota para servir imagens geradas
 @app.route("/static/output/<session>/<filename>")
 def get_imagem(session, filename):
-    # Serve as imagens de dentro do tmp/img_convert/ para download
+    # Serve as imagens do diretório local C:/img_convert/<session_id>
     return send_from_directory(os.path.join(OUTPUT_FOLDER, session), filename)
 
 @app.route("/download/<session_id>")
