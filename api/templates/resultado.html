@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Imagens Geradas</title>
+</head>
+<body>
+  <h2>Imagens Processadas</h2>
+  <ul>
+    {% for imagem in imagens %}
+      <li>
+        <a href="{{ imagem.url }}" target="_blank">{{ imagem.nome }}</a><br>
+        <img src="{{ imagem.url }}" width="200"><br><br>
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="/">Voltar</a>
+</body>
+</html>

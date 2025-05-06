@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Compressão de Imagens</title>
+</head>
+<body>
+  <h1>Compressão de Imagens</h1>
+  <form action="/" method="POST" enctype="multipart/form-data">
+    <label>Imagens (múltiplas):</label><br>
+    <input type="file" name="imagens" multiple required><br><br>
+
+    <label>Largura desejada:</label><br>
+    <input type="number" name="largura" value="800" required><br><br>
+
+    <label>Qualidades (separadas por vírgula):</label><br>
+    <input type="text" name="qualidades" value="10,20,30,40,50,60" required><br><br>
+
+    <button type="submit">Processar</button>
+  </form>
+</body>
+</html>
