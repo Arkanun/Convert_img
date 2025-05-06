@@ -6,9 +6,10 @@ from PIL import Image
 
 app = Flask(__name__)
 
-# Usando /tmp para armazenamento temporário
-OUTPUT_FOLDER = "/tmp/img_convert"
+# Usando um diretório local para armazenamento temporário
+OUTPUT_FOLDER = "tmp/img_convert"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -44,33 +45,49 @@ def index():
                 print(f"[Erro] {imagem.filename}: {e}")
                 continue
 
-        # Após o processamento, gerar o arquivo ZIP
-        zip_file = shutil.make_archive(session_folder, 'zip', session_folder)
+        # Gerar o arquivo ZIP - shutil.make_archive cria o arquivo com extensão .zip automaticamente
+        zip_file_path = shutil.make_archive(
+            os.path.join(OUTPUT_FOLDER, session_id),  # Nome base do arquivo (sem extensão)
+            'zip',  # Formato
+            session_folder  # Diretório a ser zipado
+        )
+
+        # Verificar se o arquivo ZIP foi gerado corretamente
+        if not os.path.exists(zip_file_path):
+            return f"Erro: Arquivo ZIP não encontrado no caminho {zip_file_path}"
 
         # Gerar o link para download do arquivo ZIP
-        zip_url = url_for("download", session_id=session_id)
+        zip_url = url_for("download_zip", session_id=session_id)
 
         return render_template("resultado.html", imagens=imagens_processadas, zip_url=zip_url)
 
     return render_template("index.html")
+
 
 # Rota para servir imagens geradas
 @app.route("/static/output/<session>/<filename>")
 def get_imagem(session, filename):
     return send_from_directory(os.path.join(OUTPUT_FOLDER, session), filename)
 
+
 # Rota para fazer o download do arquivo ZIP
 @app.route("/download/<session_id>")
-def download(session_id):
-    # Caminho para a pasta da sessão
-    session_folder = os.path.join(OUTPUT_FOLDER, session_id)
+def download_zip(session_id):
+    # Caminho para o arquivo zip
+    zip_file_path = os.path.join(OUTPUT_FOLDER, f"{session_id}.zip")
 
-    # Nome do arquivo zip
-    zip_file = f"{session_id}.zip"
+    # Verifique se o arquivo zip existe
+    if not os.path.exists(zip_file_path):
+        return f"Erro: Arquivo ZIP não encontrado no caminho {zip_file_path}"
 
     # Serve o arquivo zip para download
-    return send_from_directory(session_folder, zip_file)
+    return send_from_directory(
+        OUTPUT_FOLDER,
+        f"{session_id}.zip",
+        as_attachment=True
+    )
 
 # Remova o app.run(), pois o Render usará gunicorn
+# Inicia o servidor local
 # if __name__ == "__main__":
-#     app.run(debug=True)
+#    app.run(debug=True)
