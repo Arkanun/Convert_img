@@ -6,8 +6,8 @@ from PIL import Image
 
 app = Flask(__name__)
 
-# Usando o caminho absoluto no C:\
-OUTPUT_FOLDER = "C:/img_convert"
+# Usando /tmp para armazenamento temporário
+OUTPUT_FOLDER = "/tmp/img_convert"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 @app.route("/", methods=["GET", "POST"])
@@ -44,26 +44,32 @@ def index():
                 print(f"[Erro] {imagem.filename}: {e}")
                 continue
 
-        return render_template("resultado.html", imagens=imagens_processadas)
+        # Após o processamento, gerar o arquivo ZIP
+        zip_file = shutil.make_archive(session_folder, 'zip', session_folder)
+
+        # Gerar o link para download do arquivo ZIP
+        zip_url = url_for("download", session_id=session_id)
+
+        return render_template("resultado.html", imagens=imagens_processadas, zip_url=zip_url)
 
     return render_template("index.html")
 
 # Rota para servir imagens geradas
 @app.route("/static/output/<session>/<filename>")
 def get_imagem(session, filename):
-    # Serve as imagens do diretório local C:/img_convert/<session_id>
     return send_from_directory(os.path.join(OUTPUT_FOLDER, session), filename)
 
+# Rota para fazer o download do arquivo ZIP
 @app.route("/download/<session_id>")
 def download(session_id):
     # Caminho para a pasta da sessão
     session_folder = os.path.join(OUTPUT_FOLDER, session_id)
 
-    # Cria um arquivo zip da pasta da sessão
-    shutil.make_archive(session_folder, 'zip', session_folder)
+    # Nome do arquivo zip
+    zip_file = f"{session_id}.zip"
 
     # Serve o arquivo zip para download
-    return send_from_directory(session_folder, f"{session_id}.zip")
+    return send_from_directory(session_folder, zip_file)
 
 # Remova o app.run(), pois o Render usará gunicorn
 # if __name__ == "__main__":
