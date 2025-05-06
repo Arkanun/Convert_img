@@ -1,10 +1,10 @@
 import os
 import uuid
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, send_from_directory
 from PIL import Image
 
 app = Flask(__name__)
-OUTPUT_FOLDER = "/tmp/output"
+OUTPUT_FOLDER = "static/output"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 @app.route("/", methods=["GET", "POST"])
@@ -34,7 +34,7 @@ def index():
 
                     imagens_processadas.append({
                         "nome": nome_saida,
-                        "url": f"/tmp/output/{session_id}/{nome_saida}"  # Alterado para /tmp/output
+                        "url": url_for("get_imagem", session=session_id, filename=nome_saida)
                     })
 
             except Exception as e:
@@ -45,5 +45,11 @@ def index():
 
     return render_template("index.html")
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# Rota para servir imagens geradas
+@app.route("/static/output/<session>/<filename>")
+def get_imagem(session, filename):
+    return send_from_directory(os.path.join(OUTPUT_FOLDER, session), filename)
+
+# Remova o app.run(), pois o Render usará gunicorn
+# if __name__ == "__main__":
+#     app.run(debug=True)
