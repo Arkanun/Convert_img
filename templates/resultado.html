@@ -1,19 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Imagens Geradas</title>
+    <meta charset="UTF-8">
+    <title>Resultado da Conversão</title>
 </head>
 <body>
-  <h2>Imagens Processadas</h2>
-  <ul>
-    {% for imagem in imagens %}
-      <li>
-        <a href="{{ imagem.url }}" target="_blank">{{ imagem.nome }}</a><br>
-        <img src="{{ imagem.url }}" width="200"><br><br>
-      </li>
-    {% endfor %}
-  </ul>
-  <a href="/">Voltar</a>
+    <h1>Imagens Processadas</h1>
+
+    <ul>
+        {% for imagem in imagens %}
+            <li>
+                <img src="{{ imagem.url }}" alt="{{ imagem.nome }}">
+                <p>{{ imagem.nome }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Baixar todas as imagens em um arquivo ZIP:</h2>
+    <a href="{{ zip_url }}" download>Clique aqui para baixar o ZIP</a>
 </body>
 </html>
