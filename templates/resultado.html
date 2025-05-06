@@ -1,21 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Imagens Geradas</title>
-</head>
-<body>
-  <h2>Imagens Processadas</h2>
-  <ul>
-    {% for imagem in imagens %}
-      <li>
-        <a href="{{ imagem.url }}" target="_blank">{{ imagem.nome }}</a><br>
-        <img src="{{ imagem.url }}" width="200"><br><br>
-      </li>
-    {% endfor %}
-  </ul>
-  <h2>Baixar todas as imagens em um arquivo ZIP:</h2>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">Conversão Concluída!</h1>
+        <p class="lead">Suas imagens foram processadas com sucesso</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8 text-center">
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>
+                    {{ imagens|length }} imagens processadas com sucesso!
+                </div>
+            </div>
+            
+            <a href="{{ zip_url }}" class="btn btn-success btn-lg download-btn mb-4">
+                <i class="bi bi-file-earmark-zip me-2"></i> Baixar Todas as Imagens (ZIP)
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <h2 class="text-center mb-4">Pré-visualização das Imagens</h2>
+        
+        {% for imagem in imagens %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ imagem.url }}" class="card-img-top img-preview" alt="{{ imagem.nome }}">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ imagem.nome }}</h5>
+                    <a href="{{ imagem.url }}" class="btn btn-outline-primary" download>
+                        <i class="bi bi-download me-1"></i> Baixar
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <h2>Baixar todas as imagens em um arquivo ZIP:</h2>
     <a href="{{ zip_url }}" download>Clique aqui para baixar o ZIP</a>
-  <a href="/">Voltar</a>
-</body>
-</html>
+</div>
+{% endblock %}
